@@ -1,6 +1,6 @@
 import os
 from celery import Celery
-from flower.command import FlowerCommand
+from flower.app import Flower
 from dotenv import load_dotenv
 import logging
 
@@ -26,14 +26,18 @@ def start_flower():
     app = create_celery_app()
     logger.info("Starting Flower with Redis URL: %s", redis_url)
 
-    flower = FlowerCommand(
-        broker=redis_url,
+    # Create Flower app
+    flower = Flower(
+        urlconf='flower.urls',
+        app=app,
         address='0.0.0.0',
         port=int(os.getenv('PORT', '5555')),
-        basic_auth=os.getenv('FLOWER_AUTH'),
+        auth=os.getenv('FLOWER_AUTH'),
         url_prefix=os.getenv('FLOWER_URL_PREFIX', '')
     )
-    flower.execute_from_commandline()
+    
+    # Start Flower
+    flower.start()
 
 if __name__ == '__main__':
     start_flower()

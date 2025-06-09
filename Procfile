@@ -1,1 +1,1 @@
-flower: python monitor.py
+web: python monitor.py
